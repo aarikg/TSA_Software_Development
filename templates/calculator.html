@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Water Savings Calculator</h2>
+        <p>Estimate how much water you could save by using our smart irrigation system.</p>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="savingsCalculator">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="currentUsage" class="form-label">Current Water Usage (liters/day)</label>
+                            <input type="number" class="form-control" id="currentUsage" min="1" value="1000">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="irrigationDays" class="form-label">Irrigation Days/Year</label>
+                            <input type="number" class="form-control" id="irrigationDays" min="1" max="365" value="180">
+                        </div>
+                        <div class="col-12">
+                            <button type="button" class="btn btn-success" onclick="calculateSavings()">Calculate Savings</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="results" class="card" style="display: none;">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Potential Savings</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <h5>Annual Water Usage</h5>
+                        <table class="table">
+                            <tr>
+                                <th>Current System</th>
+                                <td id="currentAnnual">0</td>
+                            </tr>
+                            <tr>
+                                <th>With Smart Irrigation</th>
+                                <td id="smartAnnual">0</td>
+                            </tr>
+                            <tr class="table-success">
+                                <th>Total Savings</th>
+                                <td id="totalSavings">0</td>
+                            </tr>
+                        </table>
+                        <div class="alert alert-info">
+                            <i class="bi bi-lightbulb"></i> You could save enough water to fill <span id="bathtubs">0</span> standard bathtubs (80L each)!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">How It Works</h4>
+            </div>
+            <div class="card-body">
+                <p>Our calculator estimates potential water savings based on:</p>
+                <ul>
+                    <li>Typical 20-40% reduction from precision irrigation</li>
+                    <li>Additional 5-15% from weather adaptation</li>
+                    <li>5-10% from soil moisture optimization</li>
+                </ul>
+                <p>Actual savings may vary based on your specific conditions.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function calculateSavings() {
+    const currentUsage = parseFloat(document.getElementById('currentUsage').value);
+    const irrigationDays = parseFloat(document.getElementById('irrigationDays').value);
+    
+    if (isNaN(currentUsage) || isNaN(irrigationDays)) {
+        alert('Please enter valid numbers');
+        return;
+    }
+    
+    
+    const currentAnnual = currentUsage * irrigationDays;
+    // 30% formula
+    const smartAnnual = currentAnnual * 0.7;
+    const totalSavings = currentAnnual - smartAnnual;
+    const bathtubs = Math.round(totalSavings / 80);
+    
+    // display
+    document.getElementById('currentAnnual').textContent = currentAnnual.toLocaleString() + ' liters';
+    document.getElementById('smartAnnual').textContent = Math.round(smartAnnual).toLocaleString() + ' liters';
+    document.getElementById('totalSavings').textContent = Math.round(totalSavings).toLocaleString() + ' liters';
+    document.getElementById('bathtubs').textContent = bathtubs;
+    
+
+    document.getElementById('results').style.display = 'block';
+}
+</script>
+{% endblock %}

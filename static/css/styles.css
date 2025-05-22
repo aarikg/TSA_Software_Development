@@ -1,0 +1,55 @@
+body {
+    padding-top: 20px;
+    background-color: #f8f9fa;
+}
+
+.hero-section {
+    background-color: #e8f5e9;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.bi {
+    margin-bottom: 10px;
+}
+
+#waterChart, #savingsChart {
+    width: 100% !important;
+}
+
+@media (max-width: 768px) {
+    .hero-section .col-md-6:last-child {
+        margin-top: 20px;
+    }
+}

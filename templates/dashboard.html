@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if error %}
+<div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+    <br>Please try another location or check your spelling.
+</div>
+{% endif %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Irrigation Dashboard</h2>
+        <p>Enter your farm details to get personalized irrigation recommendations.</p>
+        
+        <form method="POST" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" name="location" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="crop_type" class="form-label">Crop Type</label>
+                    <select class="form-select" id="crop_type" name="crop_type" required>
+                        <option value="">Select a crop</option>
+                        {% for crop in crops %}
+                        <option value="{{ crop }}">{{ crop|title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="soil_type" class="form-label">Soil Type</label>
+                    <select class="form-select" id="soil_type" name="soil_type" required>
+                        <option value="">Select soil type</option>
+                        <option value="sand">Sandy</option>
+                        <option value="loam">Loamy</option>
+                        <option value="clay">Clay</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="area" class="form-label">Area (square meters)</label>
+                    <input type="number" class="form-control" id="area" name="area" min="1" value="100" required>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success">Get Recommendations</button>
+                </div>
+            </div>
+        </form>
+        
+        {% if recommendations %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Irrigation Recommendations for {{ crop_type|title }} in {{ location }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Weather Conditions</h5>
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://cdn.weatherapi.com/weather/64x64/day/{{ weather.icon }}" alt="Weather icon">
+                            <div class="ms-3">
+                                <p class="mb-0"><strong>{{ weather.conditions|title }}</strong></p>
+                                <p class="mb-0">
+                                    Temperature: 
+                                    <span id="temperature-value" data-celsius="{{ weather.temperature }}">{{ weather.temperature }}</span>°<span id="temperature-unit">C</span>
+                                    <button id="toggle-temp" class="btn btn-sm btn-outline-secondary ms-2">Switch to °F</button>
+                                </p>
+                                <p class="mb-0">Precipitation: {{ weather.precipitation }} mm</p>
+                                <p class="mb-0">Humidity: {{ weather.humidity }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Recommendations</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Irrigation Needed
+                                <span class="badge bg-primary rounded-pill">{{ recommendations.irrigation_mm }} mm</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Water Volume ({{ area }} m²)
+                                <span class="badge bg-primary rounded-pill">{{ recommendations.volume_liters }} liters</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Water Saved vs Standard
+                                <span class="badge bg-success rounded-pill">{{ recommendations.water_saved }} liters</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Next Irrigation
+                                <span class="badge bg-info rounded-pill">{{ recommendations.next_irrigation }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Efficiency
+                                <span class="badge bg-warning rounded-pill">{{ recommendations.efficiency }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Water Savings</h4>
+            </div>
+            <div class="card-body">
+                <p class="mt-0">Using our smart irrigation system can save thousands of liters of water annually while maintaining or improving crop yields.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Did You Know?</h4>
+            </div>
+            <div class="card-body p-0">  
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Agriculture accounts for ~70% of global freshwater withdrawals</li>
+                    <li class="list-group-item">Precision irrigation can reduce water use by 20-40%</li>
+                    <li class="list-group-item">Proper irrigation timing improves nutrient uptake</li>
+                    <li class="list-group-item">Overwatering can be as harmful as underwatering</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Auto-fetch weather when location changes
+    const locationInput = document.getElementById('location');
+    locationInput.addEventListener('change', function() {
+        if (this.value.length > 3) {
+            fetch('/get_weather', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    location: this.value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Weather data:', data);
+            });
+        }
+    });
+
+    // Toggle temperature between Celsius and Fahrenheit
+    document.addEventListener('DOMContentLoaded', function() {
+        const tempValueEl = document.getElementById('temperature-value');
+        const tempUnitEl = document.getElementById('temperature-unit');
+        const toggleBtn = document.getElementById('toggle-temp');
+
+        if (tempValueEl && tempUnitEl && toggleBtn) {
+            toggleBtn.addEventListener('click', function() {
+                let currentUnit = tempUnitEl.textContent;
+                let celsius = parseFloat(tempValueEl.dataset.celsius);
+                if (currentUnit === 'C') {
+                    let fahrenheit = (celsius * 9 / 5) + 32;
+                    tempValueEl.textContent = fahrenheit.toFixed(1);
+                    tempUnitEl.textContent = 'F';
+                    toggleBtn.textContent = 'Switch to °C';
+                } else {
+                    tempValueEl.textContent = celsius.toFixed(1);
+                    tempUnitEl.textContent = 'C';
+                    toggleBtn.textContent = 'Switch to °F';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
