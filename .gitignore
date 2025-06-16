@@ -1,0 +1,14 @@
+# Python virtual environment
+.venv/
+venv/
+
+# AI model files and training runs
+*.pt
+runs/
+
+# Uploaded images
+static/uploads/
+
+# System files
+.DS_Store
+__pycache__/
