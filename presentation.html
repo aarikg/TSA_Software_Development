@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVISp Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            height: 100vh;
+        }
+        .slide {
+            scroll-snap-align: start;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+        .slide-content {
+            max-width: 1000px;
+            width: 100%;
+        }
+        .slide-number {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+
+    <div class="slide bg-gradient-to-br from-gray-900 to-blue-900/50">
+        <div class="slide-content text-center">
+            <h1 class="text-7xl font-black tracking-tighter text-blue-300">AVISp</h1>
+            <p class="text-3xl mt-2 text-gray-200">Agro-Voltaic Intelligence & Simulation Platform</p>
+            <p class="mt-8 text-xl text-gray-400">TSA Software Development National Competition 2025</p>
+            <p class="mt-2 text-lg text-gray-500">Aarik G and Pranav B</p>
+        </div>
+        <div class="slide-number">1 / 11</div>
+    </div>
+
+
+    <div class="slide bg-gray-900">
+        <div class="slide-content">
+            <h2 class="text-5xl font-bold text-center mb-12">The Dual-Front Challenge for Sustainability</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-3xl font-bold text-red-400">Land Scarcity</h3>
+                    <p class="mt-4 text-lg text-gray-300">The world needs to increase food production by an estimated 60% by 2050, yet available farmland is decreasing due to urbanization and climate change.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-3xl font-bold text-green-400">Energy Demands</h3>
+                    <p class="mt-4 text-lg text-gray-300">The global demand for clean, renewable energy is skyrocketing. Utility-scale solar farms require vast amounts of land, often competing with agriculture.</p>
+                </div>
+            </div>
+            <p class="text-center mt-12 text-2xl font-light text-blue-300">How can we produce more food and more energy with less land?</p>
+        </div>
+        <div class="slide-number">2 / 11</div>
+    </div>
+
+
+    <div class="slide bg-gray-900">
+        <div class="slide-content text-center">
+            <p class="text-2xl text-blue-400 font-semibold">Our Solution</p>
+            <h2 class="text-6xl font-black tracking-tight mt-2">Introducing AVISp</h2>
+            <p class="mt-6 text-xl max-w-3xl mx-auto text-gray-300">
+                AVISp is a professional-grade simulation platform designed to solve this land-use conflict. It empowers farmers, investors, and policymakers to design and analyze **agro-voltaic systems** — the co-location of solar panels and agricultural crops on the same piece of land.
+            </p>
+            <div class="mt-12 p-8 bg-gray-800 rounded-lg shadow-2xl">
+                <p class="text-2xl font-bold">Simulate. Analyze. Optimize.</p>
+                <p class="mt-2 text-lg text-gray-400">Make data-driven decisions before breaking ground.</p>
+            </div>
+        </div>
+        <div class="slide-number">3 / 11</div>
+    </div>
+
+
+    <div class="slide bg-gray-900">
+        <div class="slide-content">
+            <h2 class="text-5xl font-bold text-center mb-12">Core Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-gray-800 p-6 rounded-lg border border-green-500/30">
+                    <h3 class="text-xl font-bold text-green-400">Live Weather API</h3>
+                    <p class="mt-2 text-gray-300">Integrates with a live weather service to pull real, historical solar irradiance data for any location on Earth.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg border border-yellow-500/30">
+                    <h3 class="text-xl font-bold text-yellow-400">Dynamic Soil Modeling</h3>
+                    <p class="mt-2 text-gray-300">Utilizes a validated input system for soil composition, directly impacting water retention and savings calculations.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg border border-cyan-500/30">
+                    <h3 class="text-xl font-bold text-cyan-400">Real-time Simulation</h3>
+                    <p class="mt-2 text-gray-300">The entire system recalculates instantly as you change parameters, providing immediate feedback on your design choices.</p>
+                </div>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-indigo-500/30">
+                    <h3 class="text-xl font-bold text-indigo-400">Interactive 3D View</h3>
+                    <p class="mt-2 text-gray-300">A dynamic, high-fidelity 3D rendering of the farm layout allows for intuitive visualization and inspection of the proposed system.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-number">4 / 11</div>
+    </div>
+    
+
+    <div class="slide bg-blue-900/30">
+        <div class="slide-content text-center">
+            <h2 class="text-6xl font-bold">Live Demonstration</h2>
+            <p class="text-xl mt-4 text-gray-300">Now, we will switch to our live application to walk you through a planning scenario.</p>
+        </div>
+        <div class="slide-number">5 / 11</div>
+    </div>
+
+
+    <div class="slide bg-gray-900">
+        <div class="slide-content">
+            <h2 class="text-5xl font-bold text-center mb-12">Technical Architecture</h2>
+            <div class="bg-gray-800 p-8 rounded-lg grid grid-cols-3 gap-8 items-center">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-cyan-400">Frontend</h3>
+                    <p class="mt-2 text-gray-300">HTML5, Tailwind CSS</p>
+                    <p class="mt-2 text-gray-300">JavaScript</p>
+                    <p class="mt-2 font-semibold text-gray-300">Libraries: three.js, Chart.js</p>
+                </div>
+                <div class="text-center text-4xl font-extrabold text-gray-500">&lt;=&gt;</div>
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-green-400">Backend</h3>
+                    <p class="mt-2 text-gray-300">Python</p>
+                    <p class="mt-2 font-semibold text-gray-300">Framework: Flask</p>
+                    <p class="mt-2 text-gray-300">Live API Integration</p>
+                </div>
+            </div>
+            <p class="text-center mt-8 text-xl text-gray-400">A robust full-stack application with a clear separation between the client-side user interface and the server-side simulation engine.</p>
+        </div>
+        <div class="slide-number">6 / 11</div>
+    </div>
+
+
+    <div class="slide bg-gray-900">
+        <div class="slide-content">
+            <h2 class="text-5xl font-bold text-center mb-12">Our Design Process</h2>
+            <div class="space-y-4">
+                <div class="flex items-center gap-4"><div class="bg-blue-500 rounded-full w-8 h-8 flex items-center justify-center font-bold">1</div><p class="text-xl text-gray-300"><b class="text-white">Ideation:</b> Identified the critical need for dual-use land solutions and conceptualized a data-driven planning tool.</p></div>
+                <div class="flex items-center gap-4"><div class="bg-blue-500 rounded-full w-8 h-8 flex items-center justify-center font-bold">2</div><p class="text-xl text-gray-300"><b class="text-white">Prototyping:</b> Built the core simulation engine in Python and a basic frontend to validate the concept and core calculations.</p></div>
+                <div class="flex items-center gap-4"><div class="bg-blue-500 rounded-full w-8 h-8 flex items-center justify-center font-bold">3</div><p class="text-xl text-gray-300"><b class="text-white">Iteration & Refinement:</b> Faced challenges with user input, such as our initial soil triangle concept. We pivoted to a more robust, validated text input system to improve usability and reliability.</p></div>
+                <div class="flex items-center gap-4"><div class="bg-blue-500 rounded-full w-8 h-8 flex items-center justify-center font-bold">4</div><p class="text-xl text-gray-300"><b class="text-white">Integration:</b> Integrated external systems like the live weather API and the 3D rendering library to add layers of complexity and real-world value.</p></div>
+                <div class="flex items-center gap-4"><div class="bg-blue-500 rounded-full w-8 h-8 flex items-center justify-center font-bold">5</div><p class="text-xl text-gray-300"><b class="text-white">Testing:</b> Rigorously tested the application for bugs, ensuring a stable and reliable user experience for our final product, AVISp v2.1.</p></div>
+            </div>
+        </div>
+        <div class="slide-number">7 / 11</div>
+    </div>
+
+
+    <div class="slide bg-gray-900">
+        <div class="slide-content">
+            <h2 class="text-5xl font-bold text-center mb-12">Value & Social Impact</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-300">For Farmers</h3>
+                    <p class="mt-2 text-gray-300">De-risks investment in new technology by providing clear projections on cost, revenue, and payback period.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-300">For Researchers</h3>
+                    <p class="mt-2 text-gray-300">A powerful tool for studying the complex relationships between solar configurations and crop yields in different climates.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-300">For Policymakers</h3>
+                    <p class="mt-2 text-gray-300">Provides data to support the creation of effective land-use policies and incentives for sustainable development.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-number">8 / 11</div>
+    </div>
+
+
+    <div class="slide bg-gray-900">
+        <div class="slide-content">
+            <h2 class="text-5xl font-bold text-center mb-8">Code Highlight: The Simulation Core</h2>
+            <p class="text-center text-lg text-gray-400 mb-4">This snippet from app.py shows how we combine user inputs and live data to calculate a result.</p>
+            <div class="bg-[#282c34] rounded-lg p-4 text-sm overflow-x-auto">
+<pre><code class="language-python text-white">
+# Fetches live weather data for the location
+base_solar_irradiance = get_solar_data(latitude, longitude)
+
+# Calculates a water retention factor from user soil input
+sand = soil_composition.get("sand", 33) / 100
+silt = soil_composition.get("silt", 33) / 100
+clay = soil_composition.get("clay", 34) / 100
+soil_water_retention_factor = 1.0 + (0.3 * clay) + (0.1 * silt) - (0.15 * sand)
+
+# Retrieves modifiers for the chosen panel and crop
+panel_mod = panel_modifiers.get(panel_config)
+crop_mod = crop_modifiers.get(crop_type)
+
+# Calculates the final water savings percentage
+water_saved = 100 - (100 * (1 - panel_mod['shading_factor']) / soil_water_retention_factor)
+</code></pre>
+            </div>
+            <p class="text-center mt-6 text-xl text-gray-300">This modular approach allows for easy updates and expansion of our scientific models.</p>
+        </div>
+        <div class="slide-number">9 / 11</div>
+    </div>
+
+
+    <div class="slide bg-gray-900">
+        <div class="slide-content">
+            <h2 class="text-5xl font-bold text-center mb-12">The Future of AVISp</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold text-blue-300">Expanded Database</h3>
+                    <p class="mt-2 text-lg text-gray-300">Incorporate a comprehensive database of crops with specific growth models and shade tolerance curves.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold text-blue-300">Machine Learning</h3>
+                    <p class="mt-2 text-lg text-gray-300">Implement a predictive model that suggests the optimal panel/crop combination for any given location and soil type.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-number">10 / 11</div>
+    </div>
+
+
+    <div class="slide bg-gradient-to-br from-gray-900 to-blue-900/50">
+        <div class="slide-content text-center">
+            <h2 class="text-8xl font-black tracking-tighter">Thank You</h2>
+            <p class="text-3xl mt-4 text-gray-300">We are now ready for your questions.</p>
+        </div>
+        <div class="slide-number">11 / 11</div>
+    </div>
+
+</body>
+</html>
