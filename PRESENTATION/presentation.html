@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri-Sphere Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8fafc;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            z-index: 10;
+        }
+        .slide-content {
+            max-width: 1000px;
+            width: 100%;
+            padding: 2rem 4rem;
+        }
+        .nav-button {
+            position: fixed;
+            bottom: 2rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 9999px;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s ease;
+        }
+        .nav-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+        #prev { left: 2rem; }
+        #next { right: 2rem; }
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 6px;
+            background-color: #10B981;
+            z-index: 30;
+            transition: width 0.3s ease;
+        }
+        .animated-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .active .animated-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .active .delay-1 { transition-delay: 0.2s; }
+        .active .delay-2 { transition-delay: 0.4s; }
+        .active .delay-3 { transition-delay: 0.6s; }
+        .active .delay-4 { transition-delay: 0.8s; }
+        .active .delay-5 { transition-delay: 1.0s; }
+        h1 {
+             background: linear-gradient(45deg, #10B981, #065F46);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <div id="presentation-container">
+
+        <div class="slide active">
+            <div class="slide-content text-center">
+                <div class="animated-item">
+                    <h1 class="text-7xl font-black mb-4">Agri-Sphere</h1>
+                    <p class="text-2xl text-slate-600">Intelligent Farm Management for a Sustainable Future</p>
+                </div>
+                <div class="mt-8 text-slate-500 animated-item delay-1">
+                    <p><strong>Aarik Ghosh & Pranav Bhatnagar</strong></p>
+                    <p><strong>Event:</strong> Software Development</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="text-5xl font-bold text-slate-800 mb-8 animated-item">The Modern Farming Dilemma</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-slate-700">
+                    <div class="p-4 bg-white rounded-lg shadow animated-item delay-1">
+                        <i class="fas fa-hand-holding-water text-3xl text-emerald-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">Resource Inefficiency</h3>
+                        <p>Over-application of water and treatments wastes money and harms the environment.</p>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow animated-item delay-2">
+                         <i class="fas fa-plant-wilt text-3xl text-emerald-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">Yield Uncertainty</h3>
+                        <p>Pests, diseases, and poor soil health create unpredictable harvests and financial risk.</p>
+                    </div>
+                     <div class="p-4 bg-white rounded-lg shadow animated-item delay-3">
+                         <i class="fas fa-layer-group text-3xl text-emerald-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">Fragmented Data</h3>
+                        <p>Critical information about soil, weather, and market prices is scattered across different platforms.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <div class="slide-content text-center">
+                 <h2 class="text-5xl font-bold text-slate-800 mb-2 animated-item">Our Solution: Agri-Sphere</h2>
+                 <p class="text-xl text-slate-600 mb-8 animated-item delay-1">A unified, AI-powered platform that centralizes farm intelligence.</p>
+                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 animated-item delay-2">
+                    <div class="p-4 bg-white rounded-lg shadow flex flex-col items-center justify-center">
+                        <i class="fas fa-tachometer-alt text-2xl text-emerald-500 mb-2"></i><span class="font-semibold">Dashboard</span>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex flex-col items-center justify-center">
+                        <i class="fas fa-leaf text-2xl text-emerald-500 mb-2"></i><span class="font-semibold">Farm Tracker</span>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex flex-col items-center justify-center">
+                        <i class="fas fa-stethoscope text-2xl text-emerald-500 mb-2"></i><span class="font-semibold">AI Crop Doctor</span>
+                    </div>
+                     <div class="p-4 bg-white rounded-lg shadow flex flex-col items-center justify-center">
+                        <i class="fas fa-vial text-2xl text-emerald-500 mb-2"></i><span class="font-semibold">AI Soil Advisor</span>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex flex-col items-center justify-center">
+                        <i class="fas fa-tint text-2xl text-emerald-500 mb-2"></i><span class="font-semibold">AI Irrigation</span>
+                    </div>
+                     <div class="p-4 bg-white rounded-lg shadow flex flex-col items-center justify-center">
+                        <i class="fas fa-map-signs text-2xl text-emerald-500 mb-2"></i><span class="font-semibold">AI Crop Planner</span>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex flex-col items-center justify-center">
+                        <i class="fas fa-chart-line text-2xl text-emerald-500 mb-2"></i><span class="font-semibold">Market Tracker</span>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex flex-col items-center justify-center">
+                        <i class="fas fa-dollar-sign text-2xl text-emerald-500 mb-2"></i><span class="font-semibold">Financials</span>
+                    </div>
+                     
+                 </div>
+            </div>
+        </div>
+        
+        <div class="slide">
+             <div class="slide-content text-center">
+                 <h2 class="text-5xl font-bold text-slate-800 mb-4 animated-item">Live Application Demo</h2>
+                 <p class="text-xl text-slate-600 animated-item delay-1">Now, let's walk through how these features work together in a real-world scenario.</p>
+            </div>
+        </div>
+        
+        <div class="slide">
+             <div class="slide-content">
+                <h2 class="text-5xl font-bold text-slate-800 mb-8 animated-item">Technical Architecture</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="animated-item delay-1">
+                        <h3 class="font-bold text-2xl mb-3">Frontend</h3>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700">
+                           <li><strong class="text-slate-800">HTML5, CSS3, JavaScript:</strong> The foundation of our responsive and interactive user interface.</li>
+                           <li><strong class="text-slate-800">Tailwind CSS:</strong> A utility-first framework for rapid, professional UI development.</li>
+                           <li><strong class="text-slate-800">Chart.js:</strong> For dynamic data visualization of soil and financial data.</li>
+                           <li><strong class="text-slate-800">Local Storage:</strong> Persists user's farm data directly in the browser for speed and privacy.</li>
+                        </ul>
+                    </div>
+                    <div class="animated-item delay-2">
+                        <h3 class="font-bold text-2xl mb-3">AI & Services</h3>
+                         <ul class="list-disc list-inside space-y-2 text-slate-700">
+                           <li><strong class="text-slate-800">Google Gemini 1.5 Flash:</strong> A single, powerful AI model used for multiple, distinct tasks:</li>
+                           <ul class="list-['-_'] list-inside ml-4">
+                               <li><strong>Multimodal Vision:</strong> Analyzing plant health from images.</li>
+                               <li><strong>Data Synthesis:</strong> Generating irrigation plans from crop, soil, and weather data.</li>
+                               <li><strong>Strategic Planning:</strong> Creating multi-year crop rotation schedules.</li>
+                               <li><strong>Live Data Retrieval:</strong> Estimating current market prices for commodities.</li>
+                           </ul>
+                           <li><strong class="text-slate-800">WeatherAPI.com:</strong> Delivers live, geo-located current weather and 3-day forecast data.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="text-5xl font-bold text-slate-800 mb-8 animated-item">Hitting the Mark: Our Scorecard</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div class="p-4 bg-white rounded-lg shadow animated-item delay-1">
+                        <h3 class="font-bold text-lg text-emerald-600">Creativity</h3>
+                        <p class="text-sm">Provides proactive, AI-driven advice for future planning, not just reactive diagnostics.</p>
+                    </div>
+                     <div class="p-4 bg-white rounded-lg shadow animated-item delay-2">
+                        <h3 class="font-bold text-lg text-emerald-600">Complexity</h3>
+                        <p class="text-sm">Demonstrates a highly integrated system where user data dynamically informs multi-variable AI prompts.</p>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow animated-item delay-3">
+                        <h3 class="font-bold text-lg text-emerald-600">Technical Skill</h3>
+                        <p class="text-sm">Leverages a single AI model for four distinct tasks, showcasing advanced prompt engineering and API usage.</p>
+                    </div>
+                     <div class="p-4 bg-white rounded-lg shadow animated-item delay-4">
+                        <h3 class="font-bold text-lg text-emerald-600">Value</h3>
+                        <p class="text-sm">Empowers farmers to increase profitability and sustainability through data-driven, intelligent decision-making.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+             <div class="slide-content text-center">
+                <h1 class="text-7xl font-black mb-4 animated-item">Thank You</h1>
+                <p class="text-2xl text-slate-600 animated-item delay-1">We are now ready for your questions.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="prev" class="nav-button"><i class="fas fa-arrow-left"></i></div>
+    <div id="next" class="nav-button"><i class="fas fa-arrow-right"></i></div>
+    <div id="progress-bar"></div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const prevButton = document.getElementById('prev');
+        const nextButton = document.getElementById('next');
+        const progressBar = document.getElementById('progress-bar');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            progressBar.style.width = `${((index + 1) / totalSlides) * 100}%`;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        prevButton.addEventListener('click', prevSlide);
+        nextButton.addEventListener('click', nextSlide);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri-Sphere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e2e8f0' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .nav-link {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .nav-link.active {
+            background-image: linear-gradient(to right, #10B981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px -2px rgba(16, 185, 129, 0.4);
+            transform: translateX(5px);
+        }
+        .nav-link:not(.active):hover {
+            background-color: #f0fdf4; /* green-50 */
+            color: #065F46; /* green-800 */
+             transform: translateX(5px);
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            border-color: #10B981;
+        }
+        .btn-primary {
+            background-image: linear-gradient(to right, #10B981, #047857);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px -2px rgba(16, 185, 129, 0.3);
+        }
+         .btn-primary:disabled {
+            background-image: none;
+            background-color: #a3e9d1;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.05);
+             box-shadow: 0 8px 25px -5px rgba(16, 185, 129, 0.5);
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #10B981;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page.active {
+            display: block;
+        }
+        .alert-item {
+            border-left-width: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-800">
+
+    <div class="flex h-screen">
+        <nav class="w-64 bg-white/80 backdrop-blur-lg border-r border-slate-200 p-4 flex-shrink-0 flex flex-col">
+            <div>
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-seedling text-3xl text-emerald-500 mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">Agri-Sphere</h1>
+                </div>
+                <p class="text-xs text-gray-500 ml-11 -mt-2 mb-8 font-semibold">PROTOTYPE</p>
+            </div>
+            <ul class="flex-grow">
+                <li><a href="#" class="nav-link active flex items-center p-3 rounded-lg mb-2" onclick="showPage('dashboard')"><i class="fas fa-tachometer-alt w-6 mr-3"></i> Dashboard</a></li>
+                <li><a href="#" class="nav-link flex items-center p-3 rounded-lg mb-2" onclick="showPage('my-farm')"><i class="fas fa-leaf w-6 mr-3"></i> My Farm</a></li>
+                <li><a href="#" class="nav-link flex items-center p-3 rounded-lg mb-2" onclick="showPage('irrigation')"><i class="fas fa-tint w-6 mr-3"></i> Irrigation</a></li>
+                <li><a href="#" class="nav-link flex items-center p-3 rounded-lg mb-2" onclick="showPage('crop-doctor')"><i class="fas fa-stethoscope w-6 mr-3"></i> Crop Doctor</a></li>
+                <li><a href="#" class="nav-link flex items-center p-3 rounded-lg" onclick="showPage('soil-health')"><i class="fas fa-vial w-6 mr-3"></i> Soil Health</a></li>
+                <li><a href="#" class="nav-link flex items-center p-3 rounded-lg" onclick="showPage('crop-planner')"><i class="fas fa-map-signs w-6 mr-3"></i> Crop Planner</a></li>
+                <li><a href="#" class="nav-link flex items-center p-3 rounded-lg" onclick="showPage('market-tracker')"><i class="fas fa-chart-line w-6 mr-3"></i> Market Tracker</a></li>
+                <li><a href="#" class="nav-link flex items-center p-3 rounded-lg" onclick="showPage('financials')"><i class="fas fa-dollar-sign w-6 mr-3"></i> Financials</a></li>
+                <li><a href="#" class="nav-link flex items-center p-3 rounded-lg" onclick="showPage('planning')"><i class="fas fa-calendar-alt w-6 mr-3"></i> Yield Planner</a></li>
+            </ul>
+        </nav>
+
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+
+            <div id="dashboard" class="page active">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800">Farm Overview</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="card col-span-1 lg:col-span-1 p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-cloud-sun-rain mr-3 text-emerald-500"></i> Local Weather</h3>
+                        <div id="weather-widget-content"></div>
+                    </div>
+                    <div class="card col-span-1 lg:col-span-2 p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-exclamation-triangle mr-3 text-emerald-500"></i> Priority Alerts</h3>
+                        <ul id="priority-alerts-list" class="space-y-3"></ul>
+                    </div>
+                    <div class="card col-span-1 lg:col-span-3 p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-map-marked-alt mr-3 text-emerald-500"></i> Farm Health Map</h3>
+                        <div id="farm-map-container" class="bg-gray-200/50 rounded-lg p-4 grid grid-cols-2 gap-4 h-64 md:h-96"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="my-farm" class="page">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800">My Farm Tracker</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-semibold mb-4">Add New Planting Zone</h3>
+                            <form id="add-plant-form">
+                                <div class="mb-4">
+                                    <label for="new-zone" class="block font-medium mb-1">Farm Zone</label>
+                                    <select id="new-zone" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                        <option>A</option> <option>B</option> <option>C</option> <option>D</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="new-crop-type" class="block font-medium mb-1">Crop Type</label>
+                                    <select id="new-crop-type" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                        <option value="Tomatoes" data-days="60">Tomatoes</option>
+                                        <option value="Corn" data-days="90">Corn</option>
+                                        <option value="Lettuce" data-days="50">Lettuce</option>
+                                        <option value="Zucchini" data-days="45">Zucchini</option>
+                                        <option value="Carrots" data-days="75">Carrots</option>
+                                    </select>
+                                </div>
+                                 <div class="mb-4">
+                                    <label for="new-plant-count" class="block font-medium mb-1">Number of Plants</label>
+                                    <input type="number" id="new-plant-count" class="w-full p-2 border border-gray-300 rounded-lg" required value="10">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="new-soil-type" class="block font-medium mb-1">Soil Type</label>
+                                    <select id="new-soil-type" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                        <option>Sandy</option> <option>Clay</option> <option>Loam</option> <option>Silt</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="new-planting-date" class="block font-medium mb-1">Planting Date</label>
+                                    <input type="date" id="new-planting-date" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                </div>
+                                <button type="submit" class="btn-primary w-full">Track Zone</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <div class="card p-6">
+                             <h3 class="text-xl font-semibold mb-4">Tracked Planting Zones</h3>
+                             <div id="plant-list" class="space-y-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="crop-doctor" class="page">
+                <h2 class="text-3xl font-bold mb-2 text-gray-800">AI Crop Doctor</h2>
+                <p class="mb-6 text-gray-500">Upload an image of a plant leaf to diagnose diseases or pests.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold mb-4">Upload Image</h3>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50" id="drop-zone">
+                            <input type="file" id="file-input" class="hidden" accept="image/*">
+                            <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-3"></i>
+                            <p class="font-semibold">Drag & drop your image here, or click to browse</p>
+                            <p class="text-sm text-gray-500 mt-1">PNG, JPG, or GIF up to 5MB</p>
+                        </div>
+                        <div id="image-preview-container" class="mt-4 hidden">
+                            <p class="font-semibold mb-2">Image Preview:</p>
+                            <img id="image-preview" src="#" alt="Image Preview" class="max-h-48 rounded-lg shadow-md mx-auto"/>
+                        </div>
+                        <button id="analyze-btn" class="btn-primary w-full mt-6" onclick="analyzeImage()">Analyze Crop</button>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold mb-4">Analysis Results</h3>
+                        <div id="results-container" class="space-y-4">
+                            <p class="text-gray-500">Results will appear here after analysis.</p>
+                        </div>
+                        <div id="loader-container" class="hidden justify-center items-center py-10">
+                            <div class="loader"></div>
+                            <p class="ml-4 text-gray-600 font-semibold">AI is analyzing image...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="irrigation" class="page">
+                <h2 class="text-3xl font-bold mb-2 text-gray-800">AI Irrigation Advisor</h2>
+                <p class="mb-6 text-gray-500">Select a planting zone to get an AI-powered irrigation plan.</p>
+                <div class="card p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="col-span-3">
+                            <label for="irrigation-zone-select" class="block font-medium mb-1">Select Planting Zone</label>
+                            <select id="irrigation-zone-select" class="w-full p-2 border border-gray-300 rounded-lg"></select>
+                        </div>
+                        <div class="flex items-end">
+                             <button id="schedule-btn" class="btn-primary w-full" onclick="generateAI_IrrigationPlan()">Get AI Plan</button>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 mt-8">3-Day Irrigation Plan</h3>
+                    <div id="irrigation-schedule" class="space-y-3">
+                         <p class="text-gray-500">Select a planting zone to get a watering recommendation.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="planning" class="page">
+                <h2 class="text-3xl font-bold mb-2 text-gray-800">Sustainable Yield Planner</h2>
+                <p class="mb-6 text-gray-500">Forecast your harvest timeline and estimate crop yield.</p>
+                <div class="card p-6">
+                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div>
+                            <label for="plan-crop-type" class="block font-medium mb-1">Crop Type</label>
+                            <select id="plan-crop-type" class="w-full p-2 border border-gray-300 rounded-lg">
+                                <option>Corn</option> <option>Tomatoes</option> <option>Lettuce</option>
+                                <option>Zucchini</option> <option>Carrots</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="planting-date" class="block font-medium mb-1">Planting Date</label>
+                            <input type="date" id="planting-date" class="w-full p-2 border border-gray-300 rounded-lg">
+                        </div>
+                         <div>
+                            <label for="area-size" class="block font-medium mb-1">Area (sq. ft)</label>
+                            <input type="number" id="area-size" value="100" class="w-full p-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="flex items-end">
+                             <button class="btn-primary w-full" onclick="generatePlan()">Forecast Yield</button>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 mt-8">Harvest Forecast</h3>
+                    <div id="yield-plan" class="bg-gray-100 p-4 rounded-lg">
+                         <p class="text-gray-500">Select a crop and planting date to see your forecast.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="soil-health" class="page">
+                <h2 class="text-3xl font-bold mb-2 text-gray-800">AI Soil Health Advisor</h2>
+                <p class="mb-6 text-gray-500">Get AI-powered soil recommendations tailored to your specific crop.</p>
+                <div class="card p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1">
+                             <h3 class="text-xl font-semibold mb-4">Soil Analysis Input</h3>
+                             <div class="mb-4">
+                                <label for="soil-zone-select" class="block font-medium mb-1">Select Planting Zone</label>
+                                <select id="soil-zone-select" class="w-full p-2 border border-gray-300 rounded-lg"></select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="soil-ph" class="block font-medium mb-1">Soil pH</label>
+                                <input type="number" id="soil-ph" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., 6.5">
+                            </div>
+                             <div class="mb-4">
+                                <label for="soil-nitrogen" class="block font-medium mb-1">Nitrogen (N) ppm</label>
+                                <input type="number" id="soil-nitrogen" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., 20">
+                            </div>
+                             <div class="mb-4">
+                                <label for="soil-phosphorus" class="block font-medium mb-1">Phosphorus (P) ppm</label>
+                                <input type="number" id="soil-phosphorus" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., 50">
+                            </div>
+                             <div class="mb-4">
+                                <label for="soil-potassium" class="block font-medium mb-1">Potassium (K) ppm</label>
+                                <input type="number" id="soil-potassium" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., 150">
+                            </div>
+                            <button id="analyze-soil-btn" class="btn-primary w-full" onclick="analyzeSoil()">Get AI Analysis</button>
+                        </div>
+                        <div class="md:col-span-2">
+                             <h3 class="text-xl font-semibold mb-4">Nutrient Balance & Recommendations</h3>
+                             <div class="relative h-96">
+                                <canvas id="soil-chart"></canvas>
+                             </div>
+                             <div id="soil-recommendations" class="mt-6">
+                                 <p class="text-gray-500">AI recommendations will appear here after analysis.</p>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="market-tracker" class="page">
+                <h2 class="text-3xl font-bold mb-2 text-gray-800">AI Market Tracker</h2>
+                <p class="mb-6 text-gray-500">Use the power of AI to get live market prices for any crop.</p>
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Add Crop to Tracker</h3>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input type="text" id="new-commodity-input" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., Coffee, Cotton, Lumber...">
+                        <button class="btn-primary" onclick="addCommodity()">Track Crop</button>
+                    </div>
+                </div>
+                <div id="commodity-prices-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+            </div>
+
+             <div id="crop-planner" class="page">
+                <h2 class="text-3xl font-bold mb-2 text-gray-800">AI Crop Rotation & Companion Planner</h2>
+                <p class="mb-6 text-gray-500">Get a multi-year crop rotation and companion planting plan to boost soil health and reduce pests.</p>
+                <div class="card p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1">
+                             <h3 class="text-xl font-semibold mb-4">Planning Inputs</h3>
+                             <div class="mb-4">
+                                <label for="planner-crops" class="block font-medium mb-1">Crops to Plant (comma-separated)</label>
+                                <textarea id="planner-crops" class="w-full p-2 border border-gray-300 rounded-lg" rows="4" placeholder="e.g., Tomatoes, Corn, Beans, Zucchini"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label for="planner-zones" class="block font-medium mb-1">Number of Planting Zones</label>
+                                <input type="number" id="planner-zones" class="w-full p-2 border border-gray-300 rounded-lg" value="4">
+                            </div>
+                            <button id="generate-plan-btn" class="btn-primary w-full" onclick="generateCropPlan()">Generate AI Plan</button>
+                        </div>
+                        <div id="crop-plan-output" class="md:col-span-2">
+                             <p class="text-gray-500 h-full flex items-center justify-center">Your AI-generated plan will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="financials" class="page">
+                 <h2 class="text-3xl font-bold mb-2 text-gray-800">Financial Dashboard</h2>
+                <p class="mb-6 text-gray-500">Forecast revenue and profitability for your current farm setup.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-semibold mb-4">Cost & Price Inputs</h3>
+                            <div class="mb-4">
+                                <label for="estimated-costs" class="block font-medium mb-1">Total Estimated Costs (USD)</label>
+                                <input type="number" id="estimated-costs" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., 500">
+                            </div>
+                            <button id="calculate-financials-btn" class="btn-primary w-full" onclick="calculateFinancials()">Calculate Profitability</button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div class="card p-6 text-center">
+                            <h4 class="text-lg font-semibold text-gray-600">Est. Revenue</h4>
+                            <p id="financials-revenue" class="text-4xl font-bold text-emerald-600 mt-2">$0</p>
+                        </div>
+                         <div class="card p-6 text-center">
+                            <h4 class="text-lg font-semibold text-gray-600">Total Costs</h4>
+                            <p id="financials-costs" class="text-4xl font-bold text-red-500 mt-2">$0</p>
+                        </div>
+                         <div class="card p-6 text-center">
+                            <h4 class="text-lg font-semibold text-gray-600">Est. Profit</h4>
+                            <p id="financials-profit" class="text-4xl font-bold text-blue-600 mt-2">$0</p>
+                        </div>
+                    </div>
+                     <div class="lg:col-span-3 card p-6">
+                        <h3 class="text-xl font-semibold mb-4">Profitability Overview</h3>
+                        <div class="relative h-96">
+                            <canvas id="financials-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </main>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+        
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+        let soilChart = null; // chart instances
+        let financialsChart = null;
+
+        function showPage(pageId) {
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active'); // activate requested page
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('onclick').includes(pageId)) { // update corresponding nav link
+                    link.classList.add('active');
+                }
+            });
+            
+            // lazy load page content
+            if (pageId === 'dashboard') updateDashboard();
+            if (pageId === 'my-farm') renderPlantList();
+            if (pageId === 'irrigation') populateIrrigationZoneSelector();
+            if (pageId === 'soil-health') populateSoilZoneSelector();
+            if (pageId === 'market-tracker') renderCommodityPrices();
+            if (pageId === 'financials') renderFinancials();
+        }
+        window.showPage = showPage;
+        
+        document.getElementById('new-planting-date').valueAsDate = new Date();
+        document.getElementById('planting-date').valueAsDate = new Date();
+
+        const addPlantForm = document.getElementById('add-plant-form');
+        
+        function getTrackedPlants() {
+            return JSON.parse(localStorage.getItem('agrisphere_plants')) || [];
+        }
+
+        function saveTrackedPlants(plants) {
+            localStorage.setItem('agrisphere_plants', JSON.stringify(plants));
+            updateDashboard(); // persist plant data
+        }
+
+        addPlantForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const plants = getTrackedPlants();
+            const newZone = document.getElementById('new-zone').value;
+
+            const isZoneTaken = plants.some(plant => plant.zone === newZone);
+            if (isZoneTaken) { // prevent zone duplication
+                alert(`Zone ${newZone} is already in use. Please choose another zone or delete the existing plant.`);
+                return;
+            }
+
+            const cropSelect = document.getElementById('new-crop-type');
+            const selectedOption = cropSelect.options[cropSelect.selectedIndex];
+            const newPlant = {
+                id: Date.now(),
+                cropName: document.getElementById('new-crop-type').value,
+                plantingDate: document.getElementById('new-planting-date').value,
+                zone: newZone,
+                plantCount: parseInt(document.getElementById('new-plant-count').value),
+                soilType: document.getElementById('new-soil-type').value,
+                daysToMaturity: parseInt(selectedOption.getAttribute('data-days')),
+                health: 'Healthy'
+            };
+            
+            plants.push(newPlant);
+            saveTrackedPlants(plants);
+            renderPlantList();
+            addPlantForm.reset();
+            document.getElementById('new-planting-date').valueAsDate = new Date();
+        });
+
+        function deletePlant(id) {
+            let plants = getTrackedPlants();
+            plants = plants.filter(p => p.id !== id);
+            saveTrackedPlants(plants);
+            renderPlantList();
+        }
+        window.deletePlant = deletePlant;
+        
+        function updatePlantHealth(id, newHealth) {
+            let plants = getTrackedPlants();
+            const plantIndex = plants.findIndex(p => p.id === id);
+            if (plantIndex > -1) {
+                plants[plantIndex].health = newHealth;
+                saveTrackedPlants(plants);
+            }
+        }
+        window.updatePlantHealth = updatePlantHealth;
+
+        function updateHarvestDate(id, newHarvestDateStr) {
+            let plants = getTrackedPlants();
+            const plantIndex = plants.findIndex(p => p.id === id);
+            if (plantIndex > -1) {
+                const plantingDate = new Date(plants[plantIndex].plantingDate + 'T00:00:00');
+                const newHarvestDate = new Date(newHarvestDateStr + 'T00:00:00');
+                // recalculate maturity days from new date
+                const newDaysToMaturity = Math.ceil((newHarvestDate - plantingDate) / (1000 * 60 * 60 * 24));
+                plants[plantIndex].daysToMaturity = newDaysToMaturity;
+                saveTrackedPlants(plants);
+                renderPlantList();
+            }
+        }
+        window.updateHarvestDate = updateHarvestDate;
+
+        function renderPlantList() {
+            const plants = getTrackedPlants();
+            const plantListContainer = document.getElementById('plant-list');
+            plantListContainer.innerHTML = '';
+            if (plants.length === 0) {
+                plantListContainer.innerHTML = `<p class="text-gray-500">No planting zones are tracked yet. Add one!</p>`;
+                return;
+            }
+            plants.forEach(plant => {
+                const plantingDate = new Date(plant.plantingDate + 'T00:00:00');
+                const harvestDate = new Date(plantingDate);
+                harvestDate.setDate(plantingDate.getDate() + plant.daysToMaturity);
+                const harvestDateStr = harvestDate.toISOString().split('T')[0];
+
+                const plantEl = document.createElement('div');
+                plantEl.className = 'p-4 bg-gray-100 rounded-lg';
+                plantEl.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <p class="font-bold text-lg">${plant.cropName} <span class="font-normal text-gray-600">(Zone ${plant.zone})</span></p>
+                        <button onclick="deletePlant(${plant.id})" class="text-red-500 hover:text-red-700 text-sm"><i class="fas fa-trash"></i></button>
+                    </div>
+                     <p class="text-sm text-gray-600">${plant.plantCount} plants in ${plant.soilType} soil.</p>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Health Status</label>
+                            <select onchange="updatePlantHealth(${plant.id}, this.value)" class="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm text-sm">
+                                <option value="Healthy" ${plant.health === 'Healthy' ? 'selected' : ''}>Healthy</option>
+                                <option value="Pest Detected" ${plant.health === 'Pest Detected' ? 'selected' : ''}>Pest Detected</option>
+                                <option value="Disease Detected" ${plant.health === 'Disease Detected' ? 'selected' : ''}>Disease Detected</option>
+                            </select>
+                        </div>
+                        <div>
+                             <label class="block text-sm font-medium text-gray-700">Est. Harvest Date</label>
+                             <input type="date" value="${harvestDateStr}" onchange="updateHarvestDate(${plant.id}, this.value)" class="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm text-sm">
+                        </div>
+                    </div>
+                `;
+                plantListContainer.appendChild(plantEl);
+            });
+        }
+        
+        const weatherWidget = document.getElementById('weather-widget-content');
+        
+        function initializeWeather() {
+            const savedLocation = localStorage.getItem('agrisphere_location');
+            if (savedLocation) { // prefer saved location
+                fetchWeatherData(savedLocation);
+            } else {
+                requestUserLocation();
+            }
+        }
+        
+        function requestUserLocation() {
+            weatherWidget.innerHTML = `<p class="text-gray-600">Attempting to get your location...</p>`;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const location = `${position.coords.latitude},${position.coords.longitude}`;
+                        localStorage.setItem('agrisphere_location', location);
+                        fetchWeatherData(location);
+                    },
+                    () => { promptForManualLocation('Could not get your location.'); } // fallback to manual input
+                );
+            } else { promptForManualLocation('Geolocation is not supported by your browser.'); }
+        }
+        
+        function promptForManualLocation(message) {
+            weatherWidget.innerHTML = `
+                <p class="text-sm text-yellow-700 mb-2">${message} Please enter it manually.</p>
+                <input type="text" id="location-input" placeholder="City, State or Zip Code" class="w-full p-2 border border-gray-300 rounded-lg mb-2">
+                <button onclick="handleManualLocation()" class="btn-primary w-full text-sm py-2">Get Weather</button>`;
+        }
+
+        async function handleManualLocation() {
+            const location = document.getElementById('location-input').value;
+            if (location) {
+                localStorage.setItem('agrisphere_location', location);
+                await fetchWeatherData(location);
+                updateDashboardAlerts();
+            } else { alert('Please enter a location.'); }
+        }
+        window.handleManualLocation = handleManualLocation;
+
+        async function fetchWeatherData(location) {
+            weatherWidget.innerHTML = `<div class="flex justify-center items-center h-full"><div class="loader"></div></div>`;
+            const url = `https://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${location}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Weather API error: ${response.statusText}`);
+                const data = await response.json();
+                const current = data.current;
+                const locationName = data.location.name;
+                weatherWidget.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-5xl font-bold">${Math.round(current.temp_f)}°F</p>
+                            <p class="text-gray-500">${current.condition.text}</p>
+                            <p class="text-sm font-semibold text-emerald-600 mt-1">${locationName}</p>
+                        </div>
+                        <img src="https:${current.condition.icon}" alt="${current.condition.text}" class="w-16 h-16">
+                    </div>
+                    <div class="mt-4 space-y-1">
+                        <p><strong>Precipitation:</strong> ${current.precip_in} in</p>
+                        <p><strong>Humidity:</strong> ${current.humidity}%</p>
+                        <p><strong>Wind:</strong> ${current.wind_mph} mph ${current.wind_dir}</p>
+                    </div>
+                    <button onclick="changeLocation()" class="text-xs text-blue-500 hover:underline mt-3">Change location</button>`;
+            } catch (error) {
+                console.error("Failed to fetch weather data:", error);
+                promptForManualLocation('Could not load weather data for that location.');
+            }
+        }
+        
+        async function changeLocation() {
+            localStorage.removeItem('agrisphere_location');
+            promptForManualLocation('Enter a new location.');
+            await updateDashboardAlerts();
+        }
+        window.changeLocation = changeLocation;
+
+        async function getForecastData() { // fetch 3-day forecast
+            const location = localStorage.getItem('agrisphere_location');
+            if (!location) return null;
+            try {
+                const forecastUrl = `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${location}&days=3`;
+                const response = await fetch(forecastUrl);
+                if (!response.ok) throw new Error('Failed to fetch forecast data.');
+                return await response.json();
+            } catch (error) {
+                console.error("Could not get forecast data:", error);
+                return null;
+            }
+        }
+        
+        function updateDashboard() {
+            updateDashboardAlerts();
+            updateFarmMap();
+        }
+
+        function updateFarmMap() {
+            const plants = getTrackedPlants();
+            const mapContainer = document.getElementById('farm-map-container');
+            const zones = {
+                A: { plant: null, health: 'Healthy' }, B: { plant: null, health: 'Healthy' },
+                C: { plant: null, health: 'Healthy' }, D: { plant: null, health: 'Healthy' }
+            };
+
+            plants.forEach(p => {
+                if(zones[p.zone]) {
+                    zones[p.zone].plant = p.cropName;
+                    zones[p.zone].health = p.health;
+                }
+            });
+
+            mapContainer.innerHTML = '';
+            for (const zoneId in zones) {
+                const zone = zones[zoneId];
+                let bgColor = 'bg-gray-300', textColor = 'text-gray-800', borderColor = 'border-gray-500';
+
+                if (zone.plant) { // reflect plant health in zone color
+                    if (zone.health === 'Healthy') {
+                        bgColor = 'bg-green-300'; textColor = 'text-green-800'; borderColor = 'border-green-500';
+                    } else if (zone.health === 'Pest Detected') {
+                        bgColor = 'bg-red-300'; textColor = 'text-red-800'; borderColor = 'border-red-500';
+                    } else if (zone.health === 'Disease Detected') {
+                         bgColor = 'bg-orange-300'; textColor = 'text-orange-800'; borderColor = 'border-orange-500';
+                    }
+                }
+                
+                mapContainer.innerHTML += `
+                    <div class="${bgColor} rounded-lg flex flex-col items-center justify-center font-bold ${textColor} border-2 ${borderColor} p-2">
+                        <span>Zone ${zoneId}</span>
+                        <span class="text-sm font-medium mt-1">${zone.plant ? `${zone.plant} (${zone.health})` : '(Empty)'}</span>
+                    </div>`;
+            }
+        }
+
+        async function updateDashboardAlerts() {
+            const alertsList = document.getElementById('priority-alerts-list');
+            alertsList.innerHTML = `<div class="flex justify-center items-center h-full"><div class="loader"></div></div>`;
+            let alerts = [];
+            const plants = getTrackedPlants();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // aggregate alerts from plant status and weather
+            plants.forEach(plant => {
+                if (plant.health === 'Pest Detected') alerts.push({ type: 'pest', icon: 'fa-bug', color: 'red', message: `<strong>Pest Alert:</strong> Pests detected on ${plant.cropName} in Zone ${plant.zone}. See Crop Doctor.` });
+                if (plant.health === 'Disease Detected') alerts.push({ type: 'disease', icon: 'fa-bacteria', color: 'orange', message: `<strong>Disease Alert:</strong> Disease detected on ${plant.cropName} in Zone ${plant.zone}. See Crop Doctor.` });
+                
+                const plantingDate = new Date(plant.plantingDate + 'T00:00:00');
+                const harvestDate = new Date(plantingDate);
+                harvestDate.setDate(harvestDate.getDate() + plant.daysToMaturity);
+                const daysUntilHarvest = Math.ceil((harvestDate - today) / (1000 * 60 * 60 * 24));
+
+                if (daysUntilHarvest < 0) alerts.push({ type: 'overdue', icon: 'fa-calendar-times', color: 'purple', message: `<strong>Harvest Overdue:</strong> ${plant.cropName} in Zone ${plant.zone} was due ${Math.abs(daysUntilHarvest)} day(s) ago.` });
+                else if (daysUntilHarvest <= 7) alerts.push({ type: 'harvest', icon: 'fa-calendar-alt', color: 'blue', message: `<strong>Harvest Upcoming:</strong> ${plant.cropName} in Zone ${plant.zone} is projected to be ready in ${daysUntilHarvest} day(s).` });
+            });
+
+            const forecastData = await getForecastData();
+            if (forecastData) {
+                forecastData.forecast.forecastday.forEach((forecastDay, index) => {
+                    const day = forecastDay.day;
+                    if (day.daily_will_it_rain === 1 || day.daily_chance_of_rain > 40) {
+                        const dayLabel = index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : `on ${new Date(forecastDay.date_epoch * 1000).toLocaleDateString(undefined, { weekday: 'short' })}`;
+                        alerts.push({ type: 'water', icon: 'fa-cloud-showers-heavy', color: 'green', message: `<strong>No Watering Needed:</strong> Rain is forecast ${dayLabel} (${day.daily_chance_of_rain}% chance).` });
+                    }
+                });
+            }
+            
+            alertsList.innerHTML = '';
+            if (alerts.length === 0) {
+                 alertsList.innerHTML = `<li class="text-gray-500">No urgent alerts.</li>`;
+                 return;
+            }
+
+            alerts.forEach(alert => {
+                const colorClasses = {
+                    red: { bg: 'bg-red-100', text: 'text-red-800', icon: 'text-red-600', border: 'border-red-500' },
+                    orange: { bg: 'bg-orange-100', text: 'text-orange-800', icon: 'text-orange-600', border: 'border-orange-500' },
+                    blue: { bg: 'bg-blue-100', text: 'text-blue-800', icon: 'text-blue-600', border: 'border-blue-500' },
+                    green: { bg: 'bg-green-100', text: 'text-green-800', icon: 'text-green-600', border: 'border-green-500' },
+                    purple: { bg: 'bg-purple-100', text: 'text-purple-800', icon: 'text-purple-600', border: 'border-purple-500'}
+                };
+                const c = colorClasses[alert.color];
+                const alertEl = document.createElement('li');
+                alertEl.className = `flex items-start p-3 ${c.bg} ${c.text} rounded-lg alert-item ${c.border}`;
+                alertEl.innerHTML = `<i class="fas ${alert.icon} ${c.icon} mt-1 mr-3"></i><div>${alert.message}</div>`;
+                alertsList.appendChild(alertEl);
+            });
+        }
+        
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const imagePreview = document.getElementById('image-preview');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const analyzeBtn = document.getElementById('analyze-btn');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-emerald-500', 'bg-emerald-50'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-emerald-500', 'bg-emerald-50'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-emerald-500', 'bg-emerald-50');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                displayImagePreview();
+            }
+        });
+        fileInput.addEventListener('change', displayImagePreview);
+
+        function displayImagePreview() {
+            if (fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+        
+        function fileToGenerativePart(file) { // convert file to base64 for api
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve({ inlineData: { data: reader.result.split(',')[1], mimeType: file.type } });
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        window.fileToGenerativePart = fileToGenerativePart;
+        
+        async function analyzeImage() {
+            if (!fileInput.files[0]) { alert("Please upload an image first."); return; }
+            const resultsContainer = document.getElementById('results-container');
+            const loaderContainer = document.getElementById('loader-container');
+            resultsContainer.innerHTML = '';
+            loaderContainer.classList.remove('hidden');
+            loaderContainer.classList.add('flex'); // prepare ui for analysis
+            analyzeBtn.disabled = true;
+
+            try {
+                const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+                
+                const imagePart = await fileToGenerativePart(fileInput.files[0]);
+                // construct multimodal prompt
+                const prompt = `You are an expert agronomist and plant pathologist. Analyze the provided image of a plant leaf. Identify the most likely disease, pest or deficiency. If the plant is healthy, state that clearly. Provide a confidence score. Provide a brief description. Recommend 3-4 sustainable, organic, or IPM treatment options. For effectiveness, choose between: Low, Moderate, and High. If a plant is unsavable, for the recommended treatments say how to remove the plant safely. Return ONLY a valid JSON object: {"diagnosis": "...", "confidence": "...", "description": "...", "sustainable_treatments": [{"name": "...", "description": "...", "effectiveness": "..."}]}`;
+                
+                const result = await model.generateContent([prompt, imagePart]);
+                const response = await result.response;
+                const rawText = response.text();
+                
+                // parse json from model's text response
+                const startIndex = rawText.indexOf('{');
+                const endIndex = rawText.lastIndexOf('}');
+                if (startIndex === -1 || endIndex === -1) throw new Error("Could not find a valid JSON object in the AI response.");
+                const jsonString = rawText.substring(startIndex, endIndex + 1);
+                const aiResponse = JSON.parse(jsonString);
+
+                resultsContainer.innerHTML = `
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <h4 class="font-bold text-lg">Diagnosis: <span class="text-red-600">${aiResponse.diagnosis}</span></h4>
+                        <p class="text-sm text-gray-500">Confidence Score: ${aiResponse.confidence}</p>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p>${aiResponse.description}</p></div>
+                    <div>
+                        <h4 class="font-bold text-lg mt-4 mb-2">Recommended Sustainable Treatments:</h4>
+                        <ul class="space-y-3">
+                            ${aiResponse.sustainable_treatments.map(t => `
+                                <li class="p-3 bg-green-50 rounded-lg border border-green-200">
+                                    <div class="flex justify-between items-center">
+                                        <p class="font-semibold text-green-800">${t.name}</p>
+                                        <span class="text-xs font-bold text-green-700 bg-green-200 px-2 py-1 rounded-full">${t.effectiveness} Effectiveness</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">${t.description}</p>
+                                </li>`).join('')}
+                        </ul>
+                    </div>`;
+            } catch (error) {
+                // handle potential api or parsing errors
+                console.error("AI analysis failed:", error);
+                resultsContainer.innerHTML = `<p class="text-red-500 p-4 bg-red-100 rounded-lg">An error occurred during analysis. The AI model may be temporarily unavailable. Please try again later.</p>`;
+            } finally {
+                loaderContainer.classList.add('hidden');
+                loaderContainer.classList.remove('flex');
+                analyzeBtn.disabled = false;
+            }
+        }
+        window.analyzeImage = analyzeImage;
+
+        function populateIrrigationZoneSelector() {
+            const plants = getTrackedPlants();
+            const selector = document.getElementById('irrigation-zone-select');
+            selector.innerHTML = '';
+            if (plants.length === 0) {
+                selector.innerHTML = '<option disabled selected>Add a zone in "My Farm" first</option>';
+                return;
+            }
+            plants.forEach(plant => {
+                selector.innerHTML += `<option value="${plant.id}">Zone ${plant.zone}: ${plant.plantCount} ${plant.cropName} plants</option>`;
+            });
+        }
+
+        async function generateAI_IrrigationPlan() {
+            const scheduleContainer = document.getElementById('irrigation-schedule');
+            const scheduleBtn = document.getElementById('schedule-btn');
+            const zoneSelect = document.getElementById('irrigation-zone-select');
+            if (!zoneSelect.value) { alert("Please select a planting zone."); return; }
+            
+            const plant = getTrackedPlants().find(p => p.id == zoneSelect.value);
+            if (!plant) { alert("Could not find the selected plant data."); return; }
+
+            scheduleBtn.disabled = true;
+            scheduleContainer.innerHTML = `<div class="flex justify-center items-center py-6"><div class="loader"></div><p class="ml-4">Asking AI for a custom plan...</p></div>`;
+
+            try {
+                const forecastData = await getForecastData();
+                if (!forecastData) throw new Error("Could not get weather forecast.");
+
+                const forecastString = forecastData.forecast.forecastday.map((day, index) => {
+                    const dayLabel = index === 0 ? "Today" : "Tomorrow";
+                    return `${dayLabel}: ${day.day.condition.text} with a ${day.day.daily_chance_of_rain}% chance of rain.`;
+                }).join(' ');
+                
+                // build prompt with dynamic farm and weather data
+                const prompt = `
+                    You are an agricultural AI specializing in water conservation.
+                    Generate a 3-day irrigation plan in gallons for a specific plot of land.
+                    Here is the data:
+                    - Crop Type: ${plant.cropName}
+                    - Number of Plants: ${plant.plantCount}
+                    - Soil Type: ${plant.soilType}
+                    - 3-Day Weather Forecast: ${forecastString}
+                    Based on this data, calculate the recommended watering amount in gallons for each of the next 3 days. Provide a brief "reason" for each recommendation.
+                    Return ONLY a valid JSON object with the following structure:
+                    { "plan": [ { "day": "Today", "gallons": 12.5, "reason": "Sunny and dry, requires full watering." }, { "day": "Tomorrow", "gallons": 6.0, "reason": "Cloudy with some chance of rain, reduced watering needed." }, { "day": "In 2 days", "gallons": 0, "reason": "High chance of rain, no watering required." } ] }`;
+
+                const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const rawText = response.text();
+                
+                const startIndex = rawText.indexOf('{');
+                const endIndex = rawText.lastIndexOf('}');
+                if (startIndex === -1 || endIndex === -1) throw new Error("AI response was not valid JSON.");
+                const jsonString = rawText.substring(startIndex, endIndex + 1);
+                const aiPlan = JSON.parse(jsonString);
+
+                // render structured plan from ai response
+                let scheduleHTML = '';
+                aiPlan.plan.forEach((dayPlan, index) => {
+                    const forecastDay = forecastData.forecast.forecastday[index].day;
+                    let icon = 'fas fa-tint text-blue-500';
+                    if (dayPlan.gallons === 0) icon = 'fas fa-cloud-showers-heavy text-green-500';
+                    else if (dayPlan.gallons < 5) icon = 'fas fa-cloud-rain text-green-500';
+
+                    scheduleHTML += `
+                        <div class="flex items-center p-3 bg-gray-100 rounded-lg">
+                            <i class="${icon} w-8 text-xl text-center"></i>
+                            <div class="flex-1 ml-3">
+                                <p class="font-semibold">${dayPlan.day} <span class="text-gray-500 font-normal text-sm">(${forecastDay.condition.text})</span></p>
+                                <p class="text-sm text-gray-600">${dayPlan.reason}</p>
+                            </div>
+                            <div class="font-bold text-lg">${dayPlan.gallons.toFixed(1)} gal</div>
+                        </div>`;
+                });
+                scheduleContainer.innerHTML = scheduleHTML;
+
+            } catch (error) {
+                console.error("Failed to generate AI irrigation plan:", error);
+                scheduleContainer.innerHTML = `<p class="text-red-500 p-4 bg-red-100 rounded-lg">Could not generate AI plan. Please try again later.</p>`;
+            } finally {
+                 scheduleBtn.disabled = false;
+            }
+        }
+        window.generateAI_IrrigationPlan = generateAI_IrrigationPlan;
+        
+        // static crop parameters
+        const CROP_DATA = {
+            "Tomatoes": { days: 60, plantsPerSqFt: 0.5, yieldLbsPerPlant: 10 },
+            "Corn":     { days: 90, plantsPerSqFt: 0.5, yieldLbsPerPlant: 1, symbol: 'CORN' },
+            "Lettuce":  { days: 50, plantsPerSqFt: 2,   yieldLbsPerPlant: 1.5 },
+            "Zucchini": { days: 45, plantsPerSqFt: 0.2, yieldLbsPerPlant: 8 },
+            "Carrots":  { days: 75, plantsPerSqFt: 16,  yieldLbsPerPlant: 0.2 }
+        };
+
+        function generatePlan() {
+            const cropSelect = document.getElementById('plan-crop-type');
+            const plantingDateStr = document.getElementById('planting-date').value;
+            const areaSqFt = parseFloat(document.getElementById('area-size').value);
+            const planContainer = document.getElementById('yield-plan');
+
+            if (!plantingDateStr || !areaSqFt) {
+                 planContainer.innerHTML = `<p class="text-red-500">Please fill out all fields.</p>`;
+                 return;
+            }
+
+            const cropName = cropSelect.value;
+            const cropInfo = CROP_DATA[cropName];
+            if (!cropInfo) { planContainer.innerHTML = `<p class="text-red-500">Could not find data for the selected crop.</p>`; return; }
+
+            const daysToMaturity = cropInfo.days;
+            const plantingDate = new Date(plantingDateStr + 'T00:00:00');
+            const harvestDate = new Date(plantingDate);
+            harvestDate.setDate(plantingDate.getDate() + daysToMaturity);
+
+            const totalPlants = Math.floor(cropInfo.plantsPerSqFt * areaSqFt);
+            const totalYieldLbs = (totalPlants * cropInfo.yieldLbsPerPlant).toFixed(1);
+
+            planContainer.innerHTML = `
+                <div class="p-6">
+                    <div class="text-center mb-6">
+                        <h4 class="text-2xl font-bold text-emerald-600">${cropName} Harvest Forecast</h4>
+                        <p class="text-gray-600">Based on a ${daysToMaturity}-day growth cycle for a <strong>${areaSqFt} sq. ft.</strong> area.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="p-4 bg-white rounded-lg shadow"><i class="fas fa-calendar-alt text-3xl text-emerald-500 mb-2"></i><p class="text-2xl font-bold">${harvestDate.toLocaleDateString()}</p><p class="text-sm text-gray-500">Est. Harvest Date</p></div>
+                        <div class="p-4 bg-white rounded-lg shadow"><i class="fas fa-seedling text-3xl text-emerald-500 mb-2"></i><p class="text-2xl font-bold">${totalPlants}</p><p class="text-sm text-gray-500">Total Plants</p></div>
+                        <div class="p-4 bg-white rounded-lg shadow"><i class="fas fa-weight-hanging text-3xl text-emerald-500 mb-2"></i><p class="text-2xl font-bold">${totalYieldLbs} lbs</p><p class="text-sm text-gray-500">Total Est. Yield</p></div>
+                    </div>
+                </div>`;
+        }
+        window.generatePlan = generatePlan;
+
+        function populateSoilZoneSelector() {
+            const plants = getTrackedPlants();
+            const selector = document.getElementById('soil-zone-select');
+            selector.innerHTML = '';
+            if (plants.length === 0) {
+                selector.innerHTML = '<option disabled selected>Add a zone in "My Farm" first</option>';
+                return;
+            }
+            plants.forEach(plant => {
+                selector.innerHTML += `<option value="${plant.id}" data-crop="${plant.cropName}" data-soil="${plant.soilType}">Zone ${plant.zone}: ${plant.cropName}</option>`;
+            });
+        }
+        
+        async function analyzeSoil() {
+            const recommendationsContainer = document.getElementById('soil-recommendations');
+            const analyzeBtn = document.getElementById('analyze-soil-btn');
+            const zoneSelect = document.getElementById('soil-zone-select');
+            if(!zoneSelect.value) {
+                alert("Please select a planting zone first.");
+                return;
+            }
+
+            const selectedOption = zoneSelect.options[zoneSelect.selectedIndex];
+            const cropName = selectedOption.getAttribute('data-crop');
+            const soilType = selectedOption.getAttribute('data-soil');
+
+            const ph = parseFloat(document.getElementById('soil-ph').value);
+            const nitrogen = parseFloat(document.getElementById('soil-nitrogen').value);
+            const phosphorus = parseFloat(document.getElementById('soil-phosphorus').value);
+            const potassium = parseFloat(document.getElementById('soil-potassium').value);
+
+            if (isNaN(ph) || isNaN(nitrogen) || isNaN(phosphorus) || isNaN(potassium)) {
+                recommendationsContainer.innerHTML = `<p class="text-red-500">Please fill out all soil nutrient fields.</p>`;
+                return;
+            }
+
+            analyzeBtn.disabled = true;
+            recommendationsContainer.innerHTML = `<div class="flex items-center"><div class="loader mr-4"></div> <p>AI is analyzing your soil for ${cropName}...</p></div>`;
+
+            // draw chart immediately for responsiveness
+            const chartData = {
+                labels: ['pH', 'Nitrogen (ppm)', 'Phosphorus (ppm)', 'Potassium (ppm)'],
+                datasets: [{
+                    label: 'Current Levels',
+                    data: [ph * 20, nitrogen, phosphorus, potassium], // Scale pH for visibility
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                }]
+            };
+            const chartOptions = {
+                responsive: true, maintainAspectRatio: false,
+                scales: { r: { angleLines: { display: true }, suggestedMin: 0, suggestedMax: 200, ticks: { display: false, backdropColor: 'rgba(0,0,0,0)' }, pointLabels: { font: { size: 14 } } } }
+            };
+            const ctx = document.getElementById('soil-chart').getContext('2d');
+            if (soilChart) soilChart.destroy();
+            soilChart = new Chart(ctx, { type: 'radar', data: chartData, options: chartOptions });
+
+            try {
+                 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+                 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+                 // generate recommendations via ai
+                 const prompt = `As a soil science expert, analyze the following soil test results for growing ${cropName} in ${soilType} soil. 
+                 Current levels:
+                 - pH: ${ph}
+                 - Nitrogen (N): ${nitrogen} ppm
+                 - Phosphorus (P): ${phosphorus} ppm
+                 - Potassium (K): ${potassium} ppm
+                 
+                 Provide a list of sustainable and organic recommendations to optimize the soil for this specific crop. If a level is already optimal, state that.
+                 Return ONLY a valid JSON object with the structure: {"recommendations": [{"nutrient": "pH", "status": "low/high/optimal", "advice": "Your detailed advice here..."}, ...]}`;
+                
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const rawText = response.text();
+                
+                const startIndex = rawText.indexOf('{');
+                const endIndex = rawText.lastIndexOf('}');
+                if (startIndex === -1 || endIndex === -1) throw new Error("AI response was not valid JSON.");
+                const jsonString = rawText.substring(startIndex, endIndex + 1);
+                const aiResponse = JSON.parse(jsonString);
+
+                let recommendationsHTML = '<ul class="list-disc list-inside space-y-2">';
+                aiResponse.recommendations.forEach(rec => {
+                    let icon = 'fa-check-circle text-emerald-500'; // Optimal
+                    if (rec.status === 'low') icon = 'fa-arrow-down text-orange-500';
+                    if (rec.status === 'high') icon = 'fa-arrow-up text-red-500';
+                    recommendationsHTML += `<li><i class="fas ${icon} mr-2"></i><strong>${rec.nutrient}:</strong> ${rec.advice}</li>`;
+                });
+                recommendationsHTML += '</ul>';
+                recommendationsContainer.innerHTML = recommendationsHTML;
+
+
+            } catch (error) {
+                 console.error("AI soil analysis failed:", error);
+                 recommendationsContainer.innerHTML = `<p class="text-red-500 p-4 bg-red-100 rounded-lg">An error occurred during AI analysis. Please try again later.</p>`;
+            } finally {
+                analyzeBtn.disabled = false;
+            }
+        }
+        window.analyzeSoil = analyzeSoil;
+
+        function getTrackedCommodities() {
+            return JSON.parse(localStorage.getItem('agrisphere_commodities')) || ['Corn', 'Wheat', 'Coffee'];
+        }
+
+        function saveTrackedCommodities(commodities) {
+            localStorage.setItem('agrisphere_commodities', JSON.stringify(commodities));
+        }
+
+        async function addCommodity() {
+            const input = document.getElementById('new-commodity-input');
+            const commodityName = input.value.trim();
+            if (!commodityName) return;
+
+            let commodities = getTrackedCommodities();
+            if (!commodities.find(c => c.toLowerCase() === commodityName.toLowerCase())) {
+                commodities.push(commodityName);
+                saveTrackedCommodities(commodities);
+                await renderCommodityPrices();
+            }
+            input.value = '';
+        }
+        window.addCommodity = addCommodity;
+        
+        async function deleteCommodity(commodityName) {
+             let commodities = getTrackedCommodities();
+             commodities = commodities.filter(c => c.toLowerCase() !== commodityName.toLowerCase());
+             saveTrackedCommodities(commodities);
+             await renderCommodityPrices();
+        }
+        window.deleteCommodity = deleteCommodity;
+        
+        async function fetchCommodityPrice(commodityName) {
+             const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+             // instruct model for specific json output
+             const prompt = `You are an expert financial analyst specializing in agricultural commodities. Your task is to provide the current market price for a given commodity, normalized to a standard unit like 'per pound' or 'per bushel'. Return your response as a valid JSON object ONLY, with no other text, explanations, or markdown formatting. The JSON object must have these exact keys: "name", "price", "unit", "trend", and "error".
+- "name": The name of the commodity, as provided by the user.
+- "price": The current market price as a number, normalized to the unit below.
+- "unit": The normalized unit for the price (e.g., "USD per pound", "USD per bushel"). For crops sold by weight like Tomatoes, use 'pound'. For grains like Corn, use 'bushel'.
+- "trend": A very brief, 1-sentence analysis of the recent price trend.
+- "error": A boolean value: 'false' if you fouand the price, 'true' if you did not.However this should always be false because the only time you return true is if the prompt is complete gibberish (for instance if the prompt was iPhone, you return true because its not a crop, but if its something like Rice or something, always return a price.)
+CRITICAL: When you find a price, double-check if it's for a large quantity (like a ton or hundredweight). If it is, you must calculate the equivalent price for a smaller, standard unit (like pound or bushel) before responding. For example, if you find coffee at $225 per hundredweight (cwt), you must convert this to a price per pound ($2.25).
+CRITICAL: If you CANNOT find a price for "${commodityName}", OR if it is not a recognizable commodity, set "price" to 0, "unit" to "Not Found", "trend" to "Data for this item could not be retrieved.", and "error" to true.
+Commodity: "${commodityName}". Make sure if its a crop like rice, tomatoes, littearlly anything related to farming or agriculture you ALWAYS retrun a value (even if its estimated and not actual live data). the ONLY case you dont return a price is if the prompt is gibberish.`;
+            
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const rawText = response.text();
+            const startIndex = rawText.indexOf('{'); // ensure price normalization
+            const endIndex = rawText.lastIndexOf('}');
+            if (startIndex === -1 || endIndex === -1) throw new Error(`Invalid AI response for ${commodityName}`);
+            const jsonString = rawText.substring(startIndex, endIndex + 1);
+            return JSON.parse(jsonString); // handle cases where a commodity is not found
+        }
+
+
+        async function renderCommodityPrices() {
+            const container = document.getElementById('commodity-prices-container');
+            container.innerHTML = `<div class="col-span-full flex justify-center items-center"><div class="loader"></div><p class="ml-4">Fetching market prices from AI...</p></div>`;
+            const commodities = getTrackedCommodities();
+
+            if (commodities.length === 0) {
+                container.innerHTML = `<p class="col-span-full text-gray-500">No crops are being tracked. Add one above to get started.</p>`;
+                return;
+            }
+            
+            container.innerHTML = '';
+
+            await Promise.all(commodities.map(async (name) => {
+                const cardId = `commodity-${name.replace(/\s+/g, '-')}`;
+                // render placeholder cards first
+                container.innerHTML += `
+                     <div id="${cardId}" class="card p-6 flex flex-col justify-center items-center h-48">
+                         <div class="loader"></div>
+                         <p class="mt-2 text-gray-600 font-semibold">${name}</p>
+                     </div>`;
+                
+                try {
+                    const priceData = await fetchCommodityPrice(name);
+                    const cardElement = document.getElementById(cardId);
+                    // update each card asynchronously as data arrives
+                    if (priceData.error) {
+                         cardElement.innerHTML = `
+                            <div class="flex justify-between items-start w-full">
+                                <h3 class="text-xl font-semibold mb-2">${priceData.name}</h3>
+                                <button onclick="deleteCommodity('${priceData.name}')" class="text-red-400 hover:text-red-600 text-sm"><i class="fas fa-times-circle"></i></button>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-400">N/A</p>
+                            <p class="text-sm text-gray-500">${priceData.unit}</p>
+                            <p class="text-xs text-gray-400 mt-4">${priceData.trend}</p>
+                         `;
+                    } else {
+                        cardElement.innerHTML = `
+                             <div class="flex justify-between items-start w-full">
+                                <h3 class="text-xl font-semibold mb-2">${priceData.name}</h3>
+                                <button onclick="deleteCommodity('${priceData.name}')" class="text-red-400 hover:text-red-600 text-sm"><i class="fas fa-times-circle"></i></button>
+                             </div>
+                            <p class="text-3xl font-bold">$${priceData.price.toFixed(2)}</p>
+                            <p class="text-sm text-gray-500">${priceData.unit}</p>
+                            <p class="text-xs text-gray-400 mt-4">${priceData.trend}</p>
+                        `;
+                    }
+                } catch(error) {
+                    console.error(`Failed to fetch price for ${name}:`, error);
+                    const cardElement = document.getElementById(cardId);
+                    cardElement.innerHTML = `<h3 class="text-xl font-semibold mb-2">${name}</h3> <p class="text-red-500">Error loading data.</p>`;
+                }
+            }));
+        }
+        
+        async function generateCropPlan() {
+            const outputDiv = document.getElementById('crop-plan-output');
+            const generateBtn = document.getElementById('generate-plan-btn');
+            const crops = document.getElementById('planner-crops').value;
+            const zones = document.getElementById('planner-zones').value;
+
+            if (!crops.trim() || !zones) {
+                alert('Please enter the crops you wish to plant and the number of zones.');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            outputDiv.innerHTML = `<div class="flex flex-col items-center justify-center h-full"><div class="loader"></div><p class="mt-4">AI is generating a sustainable plan...</p></div>`;
+            
+            try {
+                const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+                // build structured prompt for rotation and companions
+                const prompt = `You are an expert in regenerative agriculture and permaculture. Create a 3-year crop rotation plan for a small farm with ${zones} planting zones. The farmer wants to grow the following crops: ${crops}. 
+                Your plan should aim to maximize soil health by alternating between crop families (e.g., legumes, nightshades, brassicas) and considering nutrient needs.
+                Also, for each crop listed, suggest 2-3 beneficial companion plants.
+                Return ONLY a valid JSON object with this exact structure: 
+                {
+                  "rotation_plan": [
+                    {"year": 1, "zone_1": "Crop", "zone_2": "Crop", ...},
+                    {"year": 2, "zone_1": "Crop", "zone_2": "Crop", ...},
+                    {"year": 3, "zone_1": "Crop", "zone_2": "Crop", ...}
+                  ],
+                  "companion_plants": {
+                    "Crop1": ["Companion A", "Companion B"],
+                    "Crop2": ["Companion C", "Companion D"]
+                  }
+                }
+                Make sure the number of zones in the rotation plan matches the user input of ${zones}.`;
+
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const rawText = response.text();
+                
+                const startIndex = rawText.indexOf('{');
+                const endIndex = rawText.lastIndexOf('}');
+                if (startIndex === -1 || endIndex === -1) throw new Error("AI response was not valid JSON.");
+                const jsonString = rawText.substring(startIndex, endIndex + 1);
+                const plan = JSON.parse(jsonString);
+
+                // build html from json response
+                let tableHtml = `<h3 class="text-xl font-semibold mb-4">3-Year Crop Rotation Plan</h3>
+                                 <table class="w-full text-left border-collapse">
+                                    <thead><tr>
+                                        <th class="border-b-2 p-2">Year</th>`;
+                for (let i = 1; i <= zones; i++) {
+                    tableHtml += `<th class="border-b-2 p-2">Zone ${i}</th>`;
+                }
+                tableHtml += `</tr></thead><tbody>`;
+
+                plan.rotation_plan.forEach(yearPlan => {
+                    tableHtml += `<tr><td class="border-b p-2 font-bold">${yearPlan.year}</td>`;
+                    for (let i = 1; i <= zones; i++) {
+                        tableHtml += `<td class="border-b p-2">${yearPlan[`zone_${i}`] || 'Fallow'}</td>`;
+                    }
+                    tableHtml += `</tr>`;
+                });
+                tableHtml += `</tbody></table>`;
+                
+                let companionHtml = `<h3 class="text-xl font-semibold mt-8 mb-4">Companion Planting Guide</h3>
+                                     <ul class="space-y-2">`;
+                for (const crop in plan.companion_plants) {
+                    companionHtml += `<li class="p-3 bg-gray-100 rounded-lg"><strong>${crop}:</strong> Plant with ${plan.companion_plants[crop].join(', ')}.</li>`;
+                }
+                companionHtml += `</ul>`;
+
+                outputDiv.innerHTML = tableHtml + companionHtml;
+
+            } catch (error) {
+                console.error("AI crop plan generation failed:", error);
+                outputDiv.innerHTML = `<p class="text-red-500 p-4 bg-red-100 rounded-lg">An error occurred during AI plan generation. Please try again later.</p>`;
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+        window.generateCropPlan = generateCropPlan;
+
+        function renderFinancials() {
+            const ctx = document.getElementById('financials-chart').getContext('2d');
+            if (financialsChart) financialsChart.destroy();
+            financialsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{ label: 'Est. Revenue', data: [], backgroundColor: 'rgba(16, 185, 129, 0.6)' },
+                               { label: 'Est. Costs', data: [], backgroundColor: 'rgba(239, 68, 68, 0.6)' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+        
+        async function calculateFinancials() {
+            const calculateBtn = document.getElementById('calculate-financials-btn');
+            calculateBtn.disabled = true;
+            
+            const costs = parseFloat(document.getElementById('estimated-costs').value) || 0;
+            document.getElementById('financials-costs').textContent = `$${costs.toFixed(2)}`;
+            
+            const plants = getTrackedPlants();
+            if(plants.length === 0) {
+                alert("Please add some crops in 'My Farm' before calculating financials.");
+                calculateBtn.disabled = false;
+                return;
+            }
+
+            let totalRevenue = 0;
+            const cropRevenues = {};
+
+            const uniqueCrops = [...new Set(plants.map(p => p.cropName))];
+
+            // aggregate revenue across all unique crop types
+            await Promise.all(uniqueCrops.map(async (cropName) => {
+                const priceData = await fetchCommodityPrice(cropName); // fetch current market price for each
+                if (!priceData.error) {
+                    const plantsOfThisCrop = plants.filter(p => p.cropName === cropName);
+                    const cropInfo = CROP_DATA[cropName];
+                    if(cropInfo) {
+                       const totalYield = plantsOfThisCrop.reduce((sum, p) => sum + (p.plantCount * cropInfo.yieldLbsPerPlant), 0);
+                       const revenue = totalYield * priceData.price;
+                       cropRevenues[cropName] = revenue;
+                       totalRevenue += revenue;
+                    }
+                }
+            }));
+            
+            const totalProfit = totalRevenue - costs;
+
+            document.getElementById('financials-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
+            document.getElementById('financials-profit').textContent = `$${totalProfit.toFixed(2)}`;
+            
+            // update chart with calculated financials
+            const chartLabels = Object.keys(cropRevenues);
+            const revenueData = Object.values(cropRevenues);
+            
+            financialsChart.data.labels = [...chartLabels, 'Total'];
+            financialsChart.data.datasets[0].data = [...revenueData, totalRevenue];
+            financialsChart.data.datasets[1].data = new Array(chartLabels.length).fill(0).concat([costs]);
+            financialsChart.update();
+
+            calculateBtn.disabled = false;
+        }
+        window.calculateFinancials = calculateFinancials;
+
+        window.onload = function() { // initial page render
+            initializeWeather();
+            updateDashboard();
+            generatePlan();
+        }
+
+    </script>
+</body>
+</html>
